@@ -22,6 +22,7 @@ jobs:
     runs-on: [self-hosted]
     env:
       MONGOURL: ${{ secrets.MONGOURL }}
+      PORT: 8080
     steps:
       - name: Pull image from docker hub
         run: docker pull g4urav/waysdoor_backend_cicd:latest
