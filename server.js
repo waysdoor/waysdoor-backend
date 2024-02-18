@@ -12,7 +12,7 @@ connectDb().then(() => {
         if (err) throw err;
 
         app.use(postRoute)
-        app.use('/',async(req,res)=>{res.json("hello world!")})
+       
         console.log(`Express server  running ${port}`);
 
     }
