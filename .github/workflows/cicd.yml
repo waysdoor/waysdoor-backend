@@ -21,7 +21,7 @@ jobs:
     needs: build
     runs-on: [self-hosted]
     env:
-      mongoURL: ${{ secrets.MONGOURL }}
+      MONGOURL: ${{ secrets.MONGOURL }}
     steps:
       - name: Pull image from docker hub
         run: docker pull g4urav/waysdoor_backend_cicd:latest
