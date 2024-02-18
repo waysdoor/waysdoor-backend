@@ -1,0 +1,30 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker Image
+        run: docker build -t g4urav/waysdoor_backend_cicd .
+      - name: Publish image to docker hub
+        run: docker push g4urav/waysdoor_backend_cicd:latest   
+
+  deploy: 
+    needs: build
+    runs-on: aws-ec2-backend    
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull g4urav/waysdoor_backend_cicd:latest 
+      - name: Delete Old Container
+        run: docker rm -f expressContainer
+      - name: Run docker container
+        run: docker run -d -p 3000:80 --name expressContainer g4urav/waysdoor_backend_cicd   
