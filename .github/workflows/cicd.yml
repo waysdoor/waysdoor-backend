@@ -29,4 +29,4 @@ jobs:
       - name: Delete old container
         run: docker rm -f nodejs-app-container
       - name: Run docker container
-        run: docker run -d -p 8080:8080 --name nodejs-app-container g4urav/waysdoor_backend_cicd
+        run: docker run -d -p 8080:8080 --name nodejs-app-container -e MONGOURL=$MONGOURL -e PORT=$PORT g4urav/waysdoor_backend_cicd
