@@ -2,9 +2,11 @@ const express = require('express');
 const connectDb = require("./utils/dbConnect");
 require("dotenv").config({ path: "./config.env" });
 const postRoute = require('./routes/postRoute')
-require('dotenv').config();
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080; 
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config(); 
+}
 app.use(express.json());
 
 connectDb().then(() => {
@@ -12,6 +14,7 @@ connectDb().then(() => {
         if (err) throw err;
 
         app.use(postRoute)
+       
         console.log(`Express server  running ${port}`);
 
     }
