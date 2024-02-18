@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json .
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm  build
 
 # Step 2: Server With Nginx
 FROM nginx:1.23-alpine
