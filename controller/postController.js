@@ -1,5 +1,5 @@
 const { User, Post } = require('../models');
-
+// const { uploadFile } = require('../utils/s3');
 exports.addPost = async (req, res) => {
     try {            
 
@@ -7,17 +7,18 @@ exports.addPost = async (req, res) => {
         const post = new Post({ title, description, author });
         console.log("file",req.file);
         post.image.data = req.file.buffer;
+        // await uploadFile(req.file.buffer, imageName, req.file.mimetype)
         savedPost = await post.save();
         return res.status(200).json({ "Post added": savedPost });
     } catch (error) {
-        console.error(error);
         if (error.name === 'ValidationError') {
-            // Mongoose validation error
+          
+            console.log("eeeee",error.name)
             const validationErrors = Object.entries(error.errors).map(([name, errorObject]) => ({
                 [name]: errorObject.message,
             }));            
-            
-            return res.status(400).json({  errors: validationErrors });
+            console.log("asdasdasdasdasd",validationErrors)
+            return res.status(400).json({ errors: validationErrors });
 
         }
         else{
@@ -38,7 +39,9 @@ exports.getPosts = async (req, res) => {
 
 exports.getSinglePost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
+      
+      
+        const post = await Post.find({_id : req.params.id});
         return res.status(200).json(post);
     } catch (error) {
         console.error(error);
