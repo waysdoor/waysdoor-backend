@@ -14,17 +14,23 @@ const User = new Schema(
 
 const Post = new Schema(
     {
-        title: { type: String, required: [true,'Title cannot be empty'] },
-        description: { type: String, required: [true,'Description cannot be empty'] },
-        author: { type: String,  required: [true,'Author cannot be empty'] },
-        image: {
-            data: Buffer, 
-            contentType: String,
-        },
-        likes:{type:Number},
-        created: { type: Date}
+        uid: { type: mongoose.Schema.Types.ObjectId ,ref:'User'},
+        posts: [{ types: mongoose.Schema.Types.ObjectId ,ref:"UserPost" }],
+        
     },
     
+);
+
+const UserPost = new Schema(
+    {
+        pid: { types: mongoose.Schema.Types.ObjectId },
+        title: { type: String, required: [true, 'Title cannot be empty'] },
+        description: { type: String, required: [true, 'Description cannot be empty'] },
+        author: { type: String, required: [true, 'Author cannot be empty'] },
+        likes: { type: Number },
+        created: { type: Date }
+    },
+
 );
 
 

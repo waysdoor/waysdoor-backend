@@ -21,12 +21,17 @@ jobs:
     needs: build
     runs-on: [self-hosted]
     env:
-      MONGOURL: ${{ secrets.MONGOURL }}
+      MONGOURL: ${{secrets.MONGOURL }}
+      AWS_BUCKET_NAME: ${{secrets.AWS_BUCKET_NAME }}
+      AWS_BUCKET_REGION: ${{secrets.AWS_BUCKET_REGION }}
+      AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY }}
       PORT: 8080
+
     steps:
       - name: Pull image from docker hub
         run: docker pull g4urav/waysdoor_backend_cicd:latest
       - name: Delete old container
         run: docker rm -f nodejs-app-container
       - name: Run docker container
-        run: docker run -d -p 8080:8080 --name nodejs-app-container -e MONGOURL=$MONGOURL -e PORT=$PORT g4urav/waysdoor_backend_cicd
+        run: docker run -d -p 8080:8080 --name nodejs-app-container -e AWS_BUCKET_NAME=$AWS_BUCKET_NAME -e AWS_BUCKET_REGION=$AWS_BUCKET_REGION -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e MONGOURL=$MONGOURL -e PORT=$PORT g4urav/waysdoor_backend_cicd
