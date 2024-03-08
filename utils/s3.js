@@ -1,6 +1,7 @@
 
 const { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } =require ("@aws-sdk/client-s3")
 const { ListObjectsV2Command } =require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 require("dotenv").config({ path: "../config.env" });
 
 
@@ -30,21 +31,37 @@ module.exports.uploadFile=async function (fileBuffer, key, mimetype) {
 }
 
 
-
-
-
-module.exports.getAllFilesInDirectory= async function ( directoryPath) {
-
+async function getObjectSignedUrl(key) {
     const params = {
         Bucket: bucketName,
-        region:region,
+        Key: key
+    };
+    const command = new GetObjectCommand(params);
+    const url = await getSignedUrl(s3Client, command); 
+    return url;
+}
+
+
+module.exports.getAllFilesInDirectory = async function (directoryPath) {
+    const params = {
+        Bucket: bucketName,
         Prefix: directoryPath
     };
 
     try {
+        console.log("Listing files with params:", params);
         const response = await s3Client.send(new ListObjectsV2Command(params));
-        console.log(response,"response");
-        return response.Contents.map(item => item.Key);
+        if (response.Contents) {
+            const urls = [];
+            for (const item of response.Contents) {
+                const url = await getObjectSignedUrl(item.Key);
+                urls.push(url);
+            }
+            return urls;
+        } else {
+            console.log("No files found in directory:", directoryPath);
+            return [];
+        }
     } catch (err) {
         console.error("Error listing files in directory:", err);
         return [];

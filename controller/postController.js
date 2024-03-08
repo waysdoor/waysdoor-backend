@@ -20,7 +20,6 @@ exports.addPost = async (req, res) => {
     } catch (error) {
         if (error.name === 'ValidationError') {
           
-            console.log("eeeee",error.name)
             const validationErrors = Object.entries(error.errors).map(([name, errorObject]) => ({
                 [name]: errorObject.message,
             }));            
@@ -38,12 +37,15 @@ exports.addPost = async (req, res) => {
 exports.getPosts = async (req, res) => {
     try {
         const posts = await Post.find().lean();
-        console.log("posts",posts)
-
-        return posts.map(post => ({
-            ...post,
-            media: getAllFilesInDirectory(`/u123/${post.pid}`)
-        }));
+        const postsWithMedia = [];
+        for (const post of posts) {
+            const media = await getAllFilesInDirectory(`u123/${post.pid}/`);
+            postsWithMedia.push({
+                ...post,
+                media: media
+            });
+        }
+        return res.status(200).json(postsWithMedia);
     } catch (error) {
         console.error(error);
         return res.status(500).json({  error: "Internal Server Error" });
@@ -54,8 +56,8 @@ exports.getSinglePost = async (req, res) => {
     try {
       
       
-        const post = await Post.find({_id : req.params.id});
-        return res.status(200).json(post);
+        const post = await Post.find({pid : req.params.id}).lean();
+        return res.status(200).json({...post[0],media:await getAllFilesInDirectory(`u123/${post[0].pid}/`)})
     } catch (error) {
         console.error(error);
         return res.status(500).json({  error: "Internal Server Error" });
